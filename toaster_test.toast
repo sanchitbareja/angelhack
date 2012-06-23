@@ -1,1 +1,33 @@
-# Creating a New Piece of Toast #
+# Toaster #
+Making new presentations in Toaster is extremely simple.
+In this presentation, we'll show you:
+    1. Creating a Piece of Toast
+    2. Some New Delimiters
+    3. Formatting Your Piece of Toast
+
+# Creating a Piece of Toast #
+Making a new piece of Toast is as simple as uploading a text file.
+As long as you follow a few simple rules, our website will take care of everything for you.
+Any text file should be fine!
+
+# The Title Delimiter #
+Every new slide in your Toast presentation starts off with a Title
+A Title is delimited on both sides with the '#' symbol. 
+Under a title is any text that will go on that slide.
+
+# Some More Delimiters #
+Creating a list in Toaster is easy, also. Just start
+    1. Numbering
+    2. And a list  
+    3. will automagically generate
+There are even more syntax commands you can throw in:
+    1. Underline text is two underscores on each side
+    2. Bold text is two stars on each side
+    3. Italic text is two tildes on each side
+
+# Formatting Your Piece of Toast #
+That's it! All your formatting is now done.
+There are a few more symbols you can throw in, but all that info
+will be on our website. From here, Toaster will take your text
+and pop out a new piece of Toast! 
+We hope you enjoy!
