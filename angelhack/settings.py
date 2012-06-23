@@ -1,4 +1,5 @@
 # Django settings for angelhack project.
+import os.path
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -63,13 +64,14 @@ STATIC_ROOT = ''
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
-STATIC_URL = '/static/'
+STATIC_URL = os.path.join(os.path.dirname(__file__), 'static/').replace('\\','/')
 
 # Additional locations of static files
 STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
+    os.path.join(os.path.dirname(__file__), 'static/').replace('\\','/'),
 )
 
 # List of finder classes that know how to find static files in
@@ -109,6 +111,7 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
+    os.path.join(os.path.dirname(__file__), 'views').replace('\\','/'),
 )
 
 INSTALLED_APPS = (
@@ -152,3 +155,6 @@ LOGGING = {
         },
     }
 }
+
+import dj_database_url
+DATABASES = {'default': dj_database_url.config(default='postgres://localhost')}
