@@ -2,37 +2,133 @@
 
 {% block title %}Text2Impress{% endblock %}
 
+{% block header %}
+
+{% endblock %}
+
 {% block content %}
 <div class="row">
     <div class="four columns">
-        <h2> Convert your notes to powerpoints: </h2>
-        <form action="/upload/txt/" method="post">{% csrf_token %}
-            {{ form.as_p }}
-        <input type="submit" value="Submit" />
+        <h4> Convert your notes: </h4>
+        
+            <style>
+                #impressify_data_upload { margin-left: 23px;}
+                #impressify_data_text { margin-left: 23px;}
+
+                .progress { position:relative; width:100%; border: 1px solid #ddd; padding: 1px; border-radius: 3px; }
+                .bar { background-color: #B4F5B4; width:0%; height:20px; border-radius: 3px; }
+                .percent { position:absolute; display:inline-block; top:3px; left:48%; }
+
+            </style>
+            <input type="radio" name="impressify_data" value="upload_file"><strong> Upload a text file</strong><br>
+                <div id="impressify_data_upload">
+                    <form action="/upload/txt/" method="post" enctype="multipart/form-data" id="fileupload">{% csrf_token %}
+                        <p>File: <input type="file" name="file" id="id_file" accept="text/plain"></p>
+                        <button id="file_upload_submission" >Upload</button>
+                    </form>
+
+                    <div class="progress" id="upload_status">
+                        <div class="bar"></div>
+                        <div class="percent">0%</div>
+                    </div>
+
+                    <div id="status"></div>
+
+                </div>
+            <br />
+            <input type="radio" name="impressify_data" value="upload_text"><strong> Type out the text</strong><br>
+                <div id="impressify_data_text">
+                    <p>Input: <textarea id="impressify_text_input" rows="25" cols="40" name="input"></textarea></p>
+                </div>
+                <br />
+
+            <form action="/impressify/txt/" method="post" id="impressify_form">{% csrf_token %}
+                <input type="hidden" name="impressify_text_final" value="hello" id="impressify_text_final">
+                <input type="submit" value="Submit" id="impressify_form_submission">
+            </form>
+
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.js"></script>
+        <script src="http://malsup.github.com/jquery.form.js"></script>
+        <script type="text/javascript">
+
+            $("#impressify_data_text").hide();
+            $("#impressify_data_upload").hide();
+            $("#upload_status").hide();
+            $("#file_upload_submission").hide()
+
+            $("input[name=impressify_data]").click(function() {
+                if ($(this).is(':checked')) { 
+                    if($(this).val()=="upload_file"){
+                        $("#impressify_data_text").hide();
+                        $("#impressify_data_upload").show();
+                    }
+                    if($(this).val()=="upload_text"){
+                        $("#impressify_data_upload").hide();
+                        $("#impressify_data_text").show();
+                    }
+                    console.log($(this).val());
+                } 
+            });
+
+
+            var bar = $('.bar');
+            var percent = $('.percent');
+            var file = $('#id_file');
+            var file_contents = '';
+
+            file.change(function() {
+                $("#upload_status").show();
+                $("#fileupload").submit();
+            });
+
+            $('#fileupload').ajaxForm({
+                beforeSend: function() {
+                    console.log("sending file");
+                    $("#upload_status").show();
+                    $("#status").empty();
+                    var percentVal = '0%';
+                    bar.width(percentVal);
+                    percent.html(percentVal);
+                },
+                uploadProgress: function(event, position, total, percentComplete) {
+                    console.log(percentVal);
+                    var percentVal = percentComplete + '%';
+                    bar.width(percentVal);
+                   
+                    percent.html(percentVal);
+                    if(percentComplete == 100){
+                        percent.html("Processing .txt file...");
+                    }
+                },
+                complete: function(xhr) {
+                    var uploadResponse = $.parseJSON(xhr.responseText);
+                    if(uploadResponse['success']){
+                        $("#status").html("Upload was successful!");
+                        $("#upload_status").hide();
+                        file_urls = uploadResponse['urls'];
+                    } else {
+                        $("#status").html("Upload was unsuccessful. Only upload .txt files.");
+                    }
+                    file_contents = uploadResponse['file_contents']
+                    console.log(uploadResponse);
+                }
+            });
+
+            $("#impressify_form_submission").click(function() {
+                if ($("input[name=impressify_data]").is(':checked')) { 
+                    if($("input[name=impressify_data]:checked").val()=="upload_file"){
+                        $("#impressify_text_final").val(file_contents);
+                    }
+                    if($("input[name=impressify_data]:checked").val()=="upload_text"){
+                        text_temp = $("#impressify_text_input").val();
+                        $("#impressify_text_final").val(text_temp);
+                    }
+                }
+            });            
+            
+        </script>
     </div>
 
     <iframe src="/default_impressjs/" class="eight columns" height="70%"></iframe>
 </div>
 {% endblock %}
-
-    
-    <p>Choose to upload your files or link files that are already on the web. </p>
-
-    <input type="radio" name="digitize_data" value="upload_file" />   Upload a zip file<br />
-    <div id="digitize_data_upload_file">
-        <p class="small">Supported formats: .zip <img src="/static/css/images/question_mark.png" class="title_tipsy" original-title="Include any files that the MobileWorkers will need to complete the task. For example, images to transcribe or categorize. ">
-        </p>
-
-        <form action="/file_uploads/quickpost/" method="post" enctype="multipart/form-data" id="fileupload">{% csrf_token %}
-            <label for="id_file">File:</label><input type="file" name="file" id="fileupload_select" accept="application/zip"><br>
-        </form>
-        <p></p>
-        <div class="progress" id="upload_status">
-            <div class="bar"></div>
-            <div class="percent">0%</div>
-        </div>
-        <p></p>
-        <div id="status"></div>
-        <p></p>
-
-    </div>

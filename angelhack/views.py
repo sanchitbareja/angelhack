@@ -2,50 +2,49 @@ from django.template.loader import get_template
 from django.template import Context, RequestContext
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
-
+from django.template.loader import render_to_string
 from django import forms
 from django.http import HttpResponseRedirect
+import json
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+from angelhack.settings import AWS_UPLOAD_DESTINATION
 
 class Text2ImpressForm(forms.Form):
-    file  = forms.FileField()
-    subject = forms.CharField(widget=forms.Textarea)
+    file  = forms.FileField(required=False)
+    input = forms.CharField(widget=forms.Textarea, required=False)
 
 # General pages
 def index_home(request):
+    if request.method=="POST":
+        print "index_home POST"
+        print request.POST
     form = Text2ImpressForm()
     return render_to_response('index_home.html', {'form':form}, context_instance=RequestContext(request))
 
 def generate_impressjs(request):
     return render_to_response('default_impressjs.html', context_instance=RequestContext(request))
 
+def impressify_txt(request):
+    print "inside impressify_txt"
+    print request.POST
+    return render_to_response('index_home.html', context_instance=RequestContext(request))
+
 def handle_uploaded_file(f):
     """
     unzip the file, upload each of the files individually to s3, get the s3 urls
     """
-    list_of_file_urls = []
-    try:
-        if zipfile.is_zipfile(f):
-            zippedfile = zipfile.ZipFile(f)
-            if not zippedfile.testzip(): # checks each of the archived file's CRC and file headers. returns the first bad file if any
-                extracted_files = zippedfile.namelist()
-                for extracted_file_name in extracted_files:
-                    fileinfo = zippedfile.getinfo(extracted_file_name)
-                    print "FileInfo: "+str(fileinfo.filename)
-                    filename = fileinfo.filename
-                    isDir = filename[-1] == '/' # this is a hack, we need a more concrete method of determining files
-                    isHidden = filename[0] == '.' or filename[0] == '_'
-                    print "isDir?: "+str(isDir)
-                    print "isHidden?: "+str(isHidden)
-                    if not isDir and not isHidden:
-                        extracted_file = zippedfile.extract(extracted_file_name)
-                        # save each of the extracted files
-                        print extracted_file_name
-                        list_of_file_urls += [AWS_UPLOAD_DESTINATION+str(extracted_file_name)]
-                        default_storage.save(str(extracted_file_name),File(open(extracted_file,'rwb')))
-        return list_of_file_urls
-    except Exception as e:
-        print e
-        return None
+    fileame = str(f['file'])
+    if fileame.endswith('.txt'):
+        file_contents = f['file'].read()
+        default_storage.save(fileame, ContentFile(file_contents))
+        return file_contents # success
+    else:
+        # throw an error syaing that it is not a text file
+        return False # failure
+
+class UploadFileForm(forms.Form):
+    file  = forms.FileField()
 
 def upload_file(request):
     print "I am inside upload_file"
@@ -54,12 +53,14 @@ def upload_file(request):
         print "file: "+str(request.FILES)
         form = UploadFileForm(request.POST, request.FILES)
         if form.is_valid():
-            list_of_file_urls = handle_uploaded_file(request.FILES['file'])
-            print list_of_file_urls
+            success = handle_uploaded_file(request.FILES)
+            if success:
+                file_contents = success
+                success = True
             response = {
-                'success': True,
+                'success': success,
                 'content': render_to_string( 'upload_response.html', RequestContext(request) ),
-                'urls': list_of_file_urls,
+                'file_contents': file_contents,
             }
             # return JsonResponse( statusCode = 200, body = response ).response
             return HttpResponse(json.dumps(response),mimetype='application/json')
