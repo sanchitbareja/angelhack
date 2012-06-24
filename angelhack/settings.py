@@ -9,6 +9,8 @@ ADMINS = (
     ('Sanchit Bareja', 'sanchitbareja@gmail.com'),
 )
 
+DATABASES = {}
+
 MANAGERS = ADMINS
 if os.environ.has_key('DATABASE_URL'):
     url = urlparse.urlparse(os.environ['DATABASE_URL'])
