@@ -1,9 +1,10 @@
-def parse(filename):
+def parse(text):
     """ Parses a file given a filename and returns an list 
     ready for impress.js
     """
-    opened = open(filename, 'r')
-    lines = strip_newlines(opened.readlines())
+    lines = text.split('\r\n')
+    # opened = open(filename, 'r')
+    # lines = strip_newlines(opened.readlines())
     two_list, body = list(), list() 
     title, bold, underline, italic, ordered_list, unordered_list = (False for _ in range(6))
     for index in range(len(lines)):
