@@ -31,10 +31,23 @@
 <body>
     <div class="container">
         <div class="row">
-            <div class="twelve columns">
-                <h2><a href="{% url views.index_home %}">Text2Impress</a></h2>
-                <p>Version 1 Prototyping</p>
-            </div>
+        <div class="eight columns">
+            <h2><a href="{% url views.index_home %}"><img src="{{ STATIC_URL }}logo/toaster_small.png" height="20px"/></a></h2>
+        </div>
+        <div class="four columns">
+            <br />
+            {% if user.is_authenticated %}
+                <ul class="breadcrumbs">
+                    <li><a href="{% url views.past_toasts %}">Past Toasts</a></li>
+                    <li><a href="{% url views.index_home %}">{{ user.username }}</a></li>
+                    <li><a href="{% url views.logout %}">Logout</a></li>
+                </ul>
+            {% else %}
+                <ul class="breadcrumbs">
+                    <li><a href="{% url views.signup %}">Sign Up</a></li>
+                    <li><a href="{% url views.login %}">Login</a></li>
+                </ul>
+            {% endif %}
         </div>
         <hr>
         {% block content %}{% endblock %}

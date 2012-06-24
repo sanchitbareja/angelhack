@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Text2Impress - Home{% endblock %}
+
+{% block content %}
+		<div class="row">
+			<div class="twelve columns">
+				<h3>Log In</h3>
+				<form name="input" action="/accounts/login_authenticate/" method="post">{% csrf_token %}
+					<label for="standardInput">Username</label>
+					<input type="text" class="input-text" id="standardInput" name="username">
+					<label for="standardInput">Password</label>
+					<input type="password" class="input-text" id="standardInput" name="password">
+					<input type="submit" value="Submit"/>
+				</form>
+			</div>
+			<hr>
+		</div>
+{% endblock %}

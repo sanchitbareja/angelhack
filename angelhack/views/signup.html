@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Create an account{% endblock %}
+
+{% block content %}
+  <h1>Create an account</h1>
+
+  <form name="input" action="/accounts/signup/" method="post">{% csrf_token %}
+	<p><label for="standardInput">Username:</label>
+		<input id="standardInput" type="text" name="username" maxlength="30" class="input-text" />
+		<span class="helptext">Required. 30 characters or fewer. Letters, digits and @/./+/-/_ only.</span>
+	</p>
+	<p><label for="standardInput">Password:</label>
+		<input type="password" class="input-text" name="password1" id="standardInput" />
+	</p>
+	<p><label for="standardInput">Password confirmation:</label>
+		<input type="password" class="input-text" name="password2" id="standardInput" />
+		<span class="helptext">Enter the same password as above, for verification.</span>
+	</p>
+      <input type="submit" value="Create the account">
+  </form>
+{% endblock %}

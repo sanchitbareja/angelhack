@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Text2Impress{% endblock %}
+
+{% block header %}
+
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="twelve columns">
+        <h4> Your past toasts </h4>
+        <ol>
+            {% for toast in history_of_toasts %}
+                <li>You toasted a recepie on {{ toast.timestap }} <a href="{{ toast.url }}">View here</a> <br />
+            {% endfor %}
+        </ol>
+    </div>
+</div>
+{% endblock %}

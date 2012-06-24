@@ -5,30 +5,88 @@ from django.shortcuts import render_to_response
 from django.template.loader import render_to_string
 from django import forms
 from django.http import HttpResponseRedirect
-import json
+import json, os, hashlib
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from angelhack.settings import AWS_UPLOAD_DESTINATION
+from parse import parse
+from parseHtml import parseHtml
+from django.contrib.auth.models import User
+from django.contrib import auth
+from django.contrib.auth.forms import UserCreationForm
+from toast.models import Toast
 
-class Text2ImpressForm(forms.Form):
-    file  = forms.FileField(required=False)
-    input = forms.CharField(widget=forms.Textarea, required=False)
+# Login/Logout and signup pages
+
+def login(request):
+    t = get_template('login.html')
+    html = t.render(RequestContext(request))
+    return HttpResponse(html)
+
+def login_authenticate(request):
+    username = request.POST.get('username','')
+    password = request.POST.get('password', '')
+    user = auth.authenticate(username=username, password=password)
+    if user is not None and user.is_active:
+        # Correct password, and the user is marked "active"
+        auth.login(request, user)
+        # Redirect to a success page.
+        return HttpResponseRedirect("/")
+    else:
+        # Show an error page
+        return HttpResponseRedirect("/accounts/invalid/")
+
+def logout(request):
+    auth.logout(request)
+    # Redirect to a success page. - to redo and redirect to /account/loggedout/ instead
+    return HttpResponseRedirect("/accounts/loggedout/")
+
+def loggedout(request):
+    t = get_template('loggedout.html')
+    html = t.render(RequestContext(request))
+    return HttpResponse(html)
+
+def signup(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            new_user = form.save()
+            return HttpResponseRedirect("/accounts/login/")
+    else:
+        form = UserCreationForm()
+        print form
+    return render_to_response("signup.html", {
+        'form': form,
+    }, context_instance=RequestContext(request))
+
+def invalid(request):
+    return HttpResponseRedirect("/accounts/login/")
+
 
 # General pages
 def index_home(request):
+    iframe_url = "http://text2impress.s3.amazonaws.com/28712277BOTCDRhKaUPGXJK.html"
     if request.method=="POST":
-        print "index_home POST"
-        print request.POST
-    form = Text2ImpressForm()
-    return render_to_response('index_home.html', {'form':form}, context_instance=RequestContext(request))
+        parsed_html = parseHtml(parse(request.POST['impressify_text_final']))
+        total_html = ""
+        for elem in parsed_html:
+            total_html += elem
+        rendered_html_page = render_to_response('default_impressjs.html',{"generated_html":total_html}, RequestContext(request))
+        # print "Rendered page starts here -----------------"
+        # print rendered_html_page.content
+        # print "Rendered page ends here -----------------"
+        import random, string
+        digits = "".join( [random.choice(string.digits) for i in xrange(8)] )
+        chars = "".join( [random.choice(string.letters) for i in xrange(15)] )
+        random_string = digits+chars+".html"
+        link_to_page = default_storage.save(random_string, ContentFile(rendered_html_page.content))
+        iframe_url = "http://text2impress.s3.amazonaws.com/"+random_string
+        new_toast = Toast(user=request.user,url=iframe_url)
+        new_toast.save()
+    return render_to_response('index_home.html',{"iframe_url":iframe_url}, context_instance=RequestContext(request))
 
 def generate_impressjs(request):
     return render_to_response('default_impressjs.html', context_instance=RequestContext(request))
-
-def impressify_txt(request):
-    print "inside impressify_txt"
-    print request.POST
-    return render_to_response('index_home.html', context_instance=RequestContext(request))
 
 def handle_uploaded_file(f):
     """
@@ -68,3 +126,8 @@ def upload_file(request):
     else:
         form = UploadFileForm()
     return render_to_response('test_upload.html', {'submit_success': False, 'form': form}, context_instance = RequestContext(request))
+
+def past_toasts(request):
+    user=request.user
+    history_of_toasts = Toast.objects.filter(user=user)
+    return render_to_response('past_toasts.html',{'history_of_toasts':history_of_toasts}, context_instance=RequestContext(request))
