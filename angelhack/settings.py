@@ -1,5 +1,6 @@
 # Django settings for angelhack project.
 import os.path
+import os, sys, urlparse
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
