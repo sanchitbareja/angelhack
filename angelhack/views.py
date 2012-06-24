@@ -81,8 +81,9 @@ def index_home(request):
         random_string = digits+chars+".html"
         link_to_page = default_storage.save(random_string, ContentFile(rendered_html_page.content))
         iframe_url = "http://text2impress.s3.amazonaws.com/"+random_string
-        new_toast = Toast(user=request.user,url=iframe_url)
-        new_toast.save()
+        if request.user.is_authenticated():
+            new_toast = Toast(user=request.user,url=iframe_url)
+            new_toast.save()
     return render_to_response('index_home.html',{"iframe_url":iframe_url}, context_instance=RequestContext(request))
 
 def generate_impressjs(request):

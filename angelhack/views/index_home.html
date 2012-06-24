@@ -9,6 +9,7 @@
 {% block content %}
 <div class="row">
     <div class="four columns">
+        
         <h4> Convert your notes: </h4>
         
             <style>
@@ -38,20 +39,38 @@
             <br />
             <input type="radio" name="impressify_data" value="upload_text"><strong> Type out the text</strong><br>
                 <div id="impressify_data_text">
-                    <p>Input: <textarea id="impressify_text_input" rows="25" cols="40" name="input"></textarea></p>
+                    <p>Input: <textarea id="impressify_text_input" rows="25" cols="40" name="input"># Here is my Title # 
+_This will be underlined_, but this will not!
+*This will be bolded*, but this will not!
+~This will be italicized~, but this will not!
+
+Time to make some bullet points:
+    - Here's a point
+    - Here's another point
+    - Here's my last point
+                    
+Time to make a list:
+    1. My first thing
+    2. My second thing
+    
+And here is how you include urls:
+{http://morning-robot-4490.herokuapp.com/} [Here it is!]
+
+# And this creates a new slide! #
+                    </textarea></p>
                 </div>
                 <br />
 
             <form action="/" method="post" id="impressify_form">{% csrf_token %}
                 <input type="hidden" name="impressify_text_final" value="hello" id="impressify_text_final">
-                <input type="submit" value="Submit" id="impressify_form_submission">
+                <input type="submit" value="Toast" id="impressify_form_submission">
             </form>
 
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.js"></script>
         <script src="http://malsup.github.com/jquery.form.js"></script>
         <script type="text/javascript">
 
-            $("#impressify_data_text").hide();
+            // $("#impressify_data_text").hide();
             $("#impressify_data_upload").hide();
             $("#upload_status").hide();
             $("#file_upload_submission").hide()
@@ -127,6 +146,50 @@
             });            
             
         </script>
+        <script>
+            document.getElementById("impressify_text_input").onkeydown = function(e) {
+              if (!e && event.keyCode == 9)
+              {
+                event.returnValue = false;
+                insertAtCursor(document.getElementById("impressify_text_input"), "    ");
+              }
+              else if (e.keyCode == 9)
+              {
+                e.preventDefault();
+                insertAtCursor(document.getElementById("impressify_text_input"), "    ");
+              }
+            };
+
+            //http://alexking.org/blog/2003/06/02/inserting-at-the-cursor-using-javascript#comment-3817
+            function insertAtCursor(myField, myValue) {
+              //IE support
+              if (document.selection) {
+                var temp;
+                myField.focus();
+                sel = document.selection.createRange();
+                temp = sel.text.length;
+                sel.text = myValue;
+                if (myValue.length == 0) {
+                  sel.moveStart('character', myValue.length);
+                  sel.moveEnd('character', myValue.length);
+                } else {
+                  sel.moveStart('character', -myValue.length + temp);
+                }
+                sel.select();
+              }
+              //MOZILLA/NETSCAPE support
+              else if (myField.selectionStart || myField.selectionStart == '0') {
+                var startPos = myField.selectionStart;
+                var endPos = myField.selectionEnd;
+                myField.value = myField.value.substring(0, startPos) + myValue + myField.value.substring(endPos, myField.value.length);
+                myField.selectionStart = startPos + myValue.length;
+                myField.selectionEnd = startPos + myValue.length;
+              } else {
+                myField.value += myValue;
+              }
+            }
+        </script>
+
     </div>
     <div class="eight columns">
     <iframe src="{{ iframe_url }}" width="100%" height="70%"></iframe>
