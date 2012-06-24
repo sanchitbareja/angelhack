@@ -13,7 +13,7 @@ def parseHtml(filename):
     for index in range(len(lines)):
         if (lines[index][0:4] == '<h1>') :
             if (currentBody != ''):
-                slideObject = Slide(x, y, currentBody, "slide-" + str(counter))
+                slideObject = Slide(x, y, content=currentBody, title="slide-" + str(counter))
                 counter += 1
                 x += 1000
                 linesToAdd.append('<div id={0} class={1} data-x={2} data-y={3}>\n'.format(slideObject.title(), slideObject.format(), slideObject.x(), slideObject.y()))
@@ -22,7 +22,7 @@ def parseHtml(filename):
         else:
             currentBody += lines[index]
     if(currentBody != ''):
-        slideObject = Slide(x, y, currentBody, "slide-" + str(counter))
+        slideObject = Slide(x, y, content=currentBody, title="slide-" + str(counter))
         counter += 1
         x += 1000
         linesToAdd.append('<div id={0} class={1} data-x={2} data-y="{3}">\n'.format(slideObject.title(), slideObject.format(), slideObject.x(), slideObject.y()))
@@ -31,7 +31,7 @@ def parseHtml(filename):
     new_file.writelines(linesToAdd)
     opened.close()
     new_file.close()
-
+    return linesToAdd
 if __name__ == '__main__':
     testing = parseHtml('result.html')
     for element in testing:
