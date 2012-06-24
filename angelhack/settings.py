@@ -9,17 +9,27 @@ ADMINS = (
 )
 
 MANAGERS = ADMINS
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'text2impress',                      # Or path to database file if using sqlite3.
-        'USER': 'postgres',                      # Not used with sqlite3.
-        'PASSWORD': 'root',                  # Not used with sqlite3.
-        'HOST': 'localhost',                      # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+if os.environ.has_key('DATABASE_URL'):
+    url = urlparse.urlparse(os.environ['DATABASE_URL'])
+    DATABASES['default'] = {
+        'NAME':     url.path[1:],
+        'USER':     url.username,
+        'PASSWORD': url.password,
+        'HOST':     url.hostname,
+        'PORT':     url.port,
+        'ENGINE': 'django.db.backends.postgresql_psycopg2'
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+            'NAME': 'text2impress',                      # Or path to database file if using sqlite3.
+            'USER': 'postgres',                      # Not used with sqlite3.
+            'PASSWORD': 'root',                  # Not used with sqlite3.
+            'HOST': 'localhost',                      # Set to empty string for localhost. Not used with sqlite3.
+            'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+        }
+    }
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
