@@ -1,5 +1,5 @@
 from django.conf.urls import patterns, include, url
-from angelhack.views import index_home, generate_impressjs, upload_file, impressify_txt
+from angelhack.views import index_home, generate_impressjs, upload_file, login, login_authenticate, logout, signup, loggedout, invalid, past_toasts
 
 # Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
@@ -10,6 +10,16 @@ urlpatterns = patterns('',
 	url(r'^default_impressjs/$',generate_impressjs),
 	url(r'^upload/txt/$', upload_file),
 	url(r'^impressify/txt/$',index_home),
+
+    url(r'^accounts/login/$', login),
+    url(r'^accounts/login_authenticate/$', login_authenticate),
+    url(r'^accounts/logout/$', logout),
+    url(r'^accounts/signup/$', signup),
+    url(r'^accounts/loggedout/$', loggedout),
+    url(r'^accounts/invalid/$', invalid),
+
+    url(r'^past/toasts/$', past_toasts),
+
     # Examples:
     # url(r'^$', 'angelhack.views.home', name='home'),
     # url(r'^angelhack/', include('angelhack.foo.urls')),

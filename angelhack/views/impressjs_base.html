@@ -13,10 +13,10 @@
 
     <link href="http://fonts.googleapis.com/css?family=Open+Sans:regular,semibold,italic,italicsemibold|PT+Sans:400,700,400italic,700italic|PT+Serif:400,700,400italic,700italic" rel="stylesheet" />
 
-    <link href="{{ STATIC_URL }}impress/css/impress-demo.css" rel="stylesheet" />
+    <link href="http://text2impress.s3.amazonaws.com/impress/css/impress-demo.css" rel="stylesheet" />
     
-    <link rel="shortcut icon" href="{{ STATIC_URL }}impress/favicon.png" />
-    <link rel="apple-touch-icon" href="{{ STATIC_URL }}impress/apple-touch-icon.png" />
+    <link rel="shortcut icon" href="http://text2impress.s3.amazonaws.com/impress/favicon.png" />
+    <link rel="apple-touch-icon" href="http://text2impress.s3.amazonaws.com/impress/apple-touch-icon.png" />
 
     {% block header %}
     {% endblock %}
@@ -40,11 +40,10 @@ if ("ontouchstart" in document.documentElement) {
 }
 </script>
 
-<script src="{{ STATIC_URL }}impress/js/impress.js"></script>
+<script src="http://text2impress.s3.amazonaws.com/impress/js/impress.js"></script>
 <script>impress().init();</script>
 
 {% block footer %}{% endblock %}
 
 </body>
 </html>
-
