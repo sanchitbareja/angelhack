@@ -158,3 +158,12 @@ LOGGING = {
 
 import dj_database_url
 DATABASES = {'default': dj_database_url.config(default='postgres://localhost')}
+
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
+AWS_ACCESS_KEY_ID = 'AKIAISDEISAIY3LRYY3Q'
+AWS_SECRET_ACCESS_KEY = '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'
+AWS_STORAGE_BUCKET_NAME = 'text2impress'
+BUCKET_NAME = 'text2impress'
+from S3 import CallingFormat
+AWS_CALLING_FORMAT = CallingFormat.SUBDOMAIN
+AWS_UPLOAD_DESTINATION = "http://s3.amazonaws.com/"+str(BUCKET_NAME)+"/"
