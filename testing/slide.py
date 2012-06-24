@@ -1,6 +1,6 @@
 class Slide(object):
 
-    def __init__(self, x, y, z = 0, content = '', title = '', format = 'step slide', scale = 0, rotate_x = 0, rotate_y = 0, rotate_z = 0):
+    def __init__(self, x, y, z = 0, content = '', title = '', format = '"step slide"', scale = '"0"', rotate_x = '"0"', rotate_y = '"0"', rotate_z = '"0"'):
         self.__table = {'content': content, 'title': title, 'format': format, 'x': x, 'y': y, 'z': z, 'scale': scale, 'rotate_x': rotate_x, 'rotate_y': rotate_y, 'rotate_z': rotate_z}
 
     def __retrieve(self, key):
